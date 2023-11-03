@@ -87,4 +87,35 @@ class Ann:
         
 
         return layer
+    
+    def backpropagation(self, input, target):
+        """
+        Backpropagation algorithm for training neural network
+        :param input: Input data for training
+        :param target: Target output for training
+        :return: Error for monitoring training process
+        """
+        alpha = self.alpha
+        weights = self.weights
+
+        output = self.feedforward(input)
+        output_error = target - output
+
+        delta = output_error * (output * (1 - output))
+        weight_deltas = []
+
+        for i in range(len(self.layers) - 1, 0, -1):
+            prev_layer_output = output if i == len(self.layers) - 1 else self.feedforward(input)
+
+            weight_delta = alpha * np.outer(delta, prev_layer_output)
+            weight_deltas.insert(0, weight_delta)
+
+            weights_transpose = weights[i - 1].T
+            delta = np.dot(weights_transpose[:-1, :], delta) * (prev_layer_output * (1 - prev_layer_output))
+
+        for i in range(len(self.weights)):
+            self.weights[i] += weight_deltas[i]
+
+        error = np.sum(output_error ** 2)
+        return error
 
