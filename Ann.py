@@ -21,12 +21,12 @@ class Ann:
 
         # Initialize a network
     def initialize_weights(n_inputs, n_hidden, n_outputs):
-        network = list()
+        layers = list()
         hidden_layer = [[random() for i in range(n_inputs + 1)] for i in range(n_hidden)]
-        network.append(hidden_layer)
+        layers.append(hidden_layer)
         output_layer = [[random() for i in range(n_hidden + 1)] for i in range(n_outputs)]
-        network.append(output_layer)
-        return network
+        layers.append(output_layer)
+        return layers
 
     def split_list(self, weights_list, n):
 
@@ -44,7 +44,6 @@ class Ann:
         return matrix_weights
 
     def relu(self, Z):
-
         """
         Just the implementation of the relu activation function
         :param Z: Tne value of the neuron
@@ -54,8 +53,21 @@ class Ann:
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
+    
+    def feedforward(self, input):
+        activation = list()
+        input.append(1)
+        weights = self.split_list(self.weights[0], self.layers[0])
+        activation = self.sigmoid(np.dot(weights, input))
+        for i in range(1, len(self.layers)):
+            weights = self.split_list(self.weights[i], self.layers[i])
+            activation.append(1)
+            activation = self.sigmoid(np.dot(weights, activation))
+        
+        return activation
 
-    def feedforward(self, sensor_input, weights_lists):
+
+    def feedforward2(self, sensor_input, weights_lists):
 
         real_input = sensor_input + self.prev_output
         """
@@ -72,18 +84,7 @@ class Ann:
             i += 1
         weights = self.split_list(weights_lists[i], self.layers[i])
         layer = np.dot(weights, layer)
-        new_l = layer[0]
-        new_r = layer[1]
-        if new_l > 0:
-            new_l = min(new_l, self.max_vel)
-        else:
-            new_l = max(new_l, -self.max_vel)
-        if new_r > 0:
-            new_r = (min(new_r, self.max_vel))
-        else:
-            new_r = (max(new_r, -self.max_vel))
+        
 
-        self.prev_output = [new_l, new_r]
-
-        return self.prev_output
+        return layer
 
