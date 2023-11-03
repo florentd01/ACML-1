@@ -8,7 +8,7 @@ class Ann:
 
     # Neural network class. Each robot will have its own neural network instance.
 
-    def __init__(self, layers, genotype):
+    def __init__(self, layers, alpha):
 
         """
         In this example I use a list with 5 input values since I used 5 neurons in the first layer,
@@ -17,10 +17,19 @@ class Ann:
         :param weights: The weights, which are basically the genotype
         """
         self.layers = layers
-        self.genotype = genotype
+
         self.prev_output = [0, 0]
-        self.weights = self.create_weights_lists()
-        self.max_vel = 20
+        self.weights = self.initialize_weights(layers[0], layers[1], layers[2])
+        self.alpha = alpha
+
+        # Initialize a network
+    def initialize_weights(n_inputs, n_hidden, n_outputs):
+        network = list()
+        hidden_layer = [[random() for i in range(n_inputs + 1)] for i in range(n_hidden)]
+        network.append(hidden_layer)
+        output_layer = [[random() for i in range(n_hidden + 1)] for i in range(n_outputs)]
+        network.append(output_layer)
+        return network
 
     def create_weights_lists(self):
 
@@ -32,10 +41,10 @@ class Ann:
         weights_lists = []
         i = 0
         weights_lists.append(self.genotype[:self.layers[0] * self.layers[0] + self.layers[0] * len(self.prev_output)])
-        self.weights = self.genotype[self.layers[0] * self.layers[0] + self.layers[0] * len(self.prev_output):]
+        weights = self.genotype[self.layers[0] * self.layers[0] + self.layers[0] * len(self.prev_output):]
         while i < len(self.layers) - 1:
-            weights_lists.append(self.weights[:self.layers[i] * self.layers[i + 1]])
-            self.weights = self.weights[self.layers[i] * self.layers[i + 1]:]
+            weights_lists.append(weights[:self.layers[i] * self.layers[i + 1]])
+            weights = weights[self.layers[i] * self.layers[i + 1]:]
             i += 1
         return weights_lists
 
@@ -95,6 +104,6 @@ class Ann:
             new_r = (max(new_r, -self.max_vel))
 
         self.prev_output = [new_l, new_r]
-        # print(self.prev_output)
+
         return self.prev_output
 
