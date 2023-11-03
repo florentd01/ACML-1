@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import math
-output = [0, 0]
+
 
 
 class Ann:
@@ -14,11 +14,8 @@ class Ann:
         In this example I use a list with 5 input values since I used 5 neurons in the first layer,
         but we can also use multiple input values for each neuron
         :param layers: The architecture of the network
-        :param weights: The weights, which are basically the genotype
         """
         self.layers = layers
-
-        self.prev_output = [0, 0]
         self.weights = self.initialize_weights(layers[0], layers[1], layers[2])
         self.alpha = alpha
 
@@ -30,23 +27,6 @@ class Ann:
         output_layer = [[random() for i in range(n_hidden + 1)] for i in range(n_outputs)]
         network.append(output_layer)
         return network
-
-    def create_weights_lists(self):
-
-        """
-        This method creates different weights lists given the whole genotype.
-        Each list represents the weights for a specific layer.
-        :return: Different weights lists, the amount of lists is equal to the number of layers - 1
-        """
-        weights_lists = []
-        i = 0
-        weights_lists.append(self.genotype[:self.layers[0] * self.layers[0] + self.layers[0] * len(self.prev_output)])
-        weights = self.genotype[self.layers[0] * self.layers[0] + self.layers[0] * len(self.prev_output):]
-        while i < len(self.layers) - 1:
-            weights_lists.append(weights[:self.layers[i] * self.layers[i + 1]])
-            weights = weights[self.layers[i] * self.layers[i + 1]:]
-            i += 1
-        return weights_lists
 
     def split_list(self, weights_list, n):
 
