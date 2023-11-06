@@ -1,4 +1,4 @@
-import random
+from random import random
 import numpy as np
 import math
 
@@ -20,7 +20,7 @@ class Ann:
         self.alpha = alpha
 
         # Initialize a network
-    def initialize_weights(n_inputs, n_hidden, n_outputs):
+    def initialize_weights(self, n_inputs, n_hidden, n_outputs):
         layers = list()
         hidden_layer = [[random() for i in range(n_inputs + 1)] for i in range(n_hidden)]
         layers.append(hidden_layer)
@@ -57,11 +57,13 @@ class Ann:
     def feedforward(self, input):
         activation = list()
         input.append(1)
-        weights = self.split_list(self.weights[0], self.layers[0])
+        #weights = self.split_list(self.weights[0], self.layers[0])
+        weights = self.weights[0]
         activation = self.sigmoid(np.dot(weights, input))
-        for i in range(1, len(self.layers)):
-            weights = self.split_list(self.weights[i], self.layers[i])
-            activation.append(1)
+        for i in range(1, len(self.layers)-1):
+            #weights = self.split_list(self.weights[i], self.layers[i])
+            weights = self.weights[i]
+            activation = np.append(activation, 1)
             activation = self.sigmoid(np.dot(weights, activation))
         
         return activation
@@ -96,7 +98,10 @@ class Ann:
         :return: Error for monitoring training process
         """
         alpha = self.alpha
-        weights = self.weights
+        weights = list()
+        for i in range(len(self.weights)):
+            weights.append(np.array(self.weights[i]))
+
 
         output = self.feedforward(input)
         output_error = target - output
